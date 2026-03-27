@@ -184,12 +184,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func toggleChar1(_ sender: NSMenuItem) {
         guard let chars = controller?.characters, chars.count > 0 else { return }
         let char = chars[0]
-        if char.window.isVisible {
-            char.window.orderOut(nil)
-            char.queuePlayer.pause()
+        if char.isManuallyVisible {
+            char.setManuallyVisible(false)
             sender.state = .off
         } else {
-            char.window.orderFrontRegardless()
+            char.setManuallyVisible(true)
             sender.state = .on
         }
     }
@@ -197,12 +196,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func toggleChar2(_ sender: NSMenuItem) {
         guard let chars = controller?.characters, chars.count > 1 else { return }
         let char = chars[1]
-        if char.window.isVisible {
-            char.window.orderOut(nil)
-            char.queuePlayer.pause()
+        if char.isManuallyVisible {
+            char.setManuallyVisible(false)
             sender.state = .off
         } else {
-            char.window.orderFrontRegardless()
+            char.setManuallyVisible(true)
             sender.state = .on
         }
     }
