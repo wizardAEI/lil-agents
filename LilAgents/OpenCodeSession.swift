@@ -72,6 +72,11 @@ class OpenCodeSession: AgentSession {
                 guard let self = self else { return }
                 self.process = nil
                 
+                if !self.lineBuffer.isEmpty {
+                    self.parseLine(self.lineBuffer)
+                    self.lineBuffer = ""
+                }
+                
                 if !self.currentResponseText.isEmpty {
                     self.history.append(AgentMessage(role: .assistant, text: self.currentResponseText))
                 }
@@ -148,18 +153,21 @@ class OpenCodeSession: AgentSession {
 
         switch type {
         case "text":
-            if let text = json["text"] as? String {
+            if let part = json["part"] as? [String: Any],
+               let text = part["text"] as? String {
                 currentResponseText += text
                 onText?(text)
             }
 
-        case "step-start":
+        case "step_start":
             isBusy = true
 
-        case "step-finish":
-            // We'll wait for process termination for final turn completion 
-            // but we can mark it here if needed.
+        case "step_finish":
             break
+
+        case "result":
+            isBusy = false
+            onTurnComplete?()
 
         case "assistant.tool_call":
             let part = json["part"] as? [String: Any] ?? [:]
